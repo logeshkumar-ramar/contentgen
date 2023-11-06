@@ -2,7 +2,7 @@ import json
 import base64
 import requests
 from ast import literal_eval
-from main import get_content_email, get_content_whatsapp, get_prompt_image, get_image, generate_content, get_best_holidays, get_plan, get_card, get_banner, get_best_holidays2
+from main import get_content_email, get_content_whatsapp, get_prompt_image, get_image, generate_content, get_best_holidays, get_plan, get_card, get_banner, get_best_holidays2, get_plan_v2, get_product_specific
 import os
 def lambda_handler(event, context):
 
@@ -20,6 +20,8 @@ def lambda_handler(event, context):
         content = get_best_holidays(context)
     if path[0]=="get_plan":
         content = get_plan(context)
+    if path[0]=="get_plan_v2":
+        content = get_plan_v2(context)
     if path[0]=="get_image":
         content = get_image(context)
     if path[0]=="get_card":
@@ -28,6 +30,8 @@ def lambda_handler(event, context):
         content = get_banner(context)
     if path[0]=="testing":
         content = get_best_holidays2(context)
+    if path[0]=="get_style":
+        content = get_product_specific(context)
     print('final_content: ', content)   
     return {
         'statusCode': 200,

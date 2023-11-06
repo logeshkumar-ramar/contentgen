@@ -120,6 +120,22 @@ PROMPT_PLANNER = [
                     }
                 ]
 
+PROMPT_PLANNER_V2 = [
+                    {
+                        "type": "system",
+                        "content": "You are tasked with suggesting the best dates to run the marketing campaign given the prompt by marketer (you are also provided the today date in case the user does not specify the date use today date as the first date of planning, otherwise decipher from the user input in context when the event is occuring) , also provide a short description of what the campaign goal will be for given date. Use your knowledge source in marketing to answer this question. Only provide dates with short description as output, give output in json format. Also make sure the goal is in line with the industry that the user is working in  which is also provided in the context"
+
+                    },
+                    {
+                        "type": "human",
+                        "content": """Context: {info}"""
+                    },
+                    {
+                    "type": "human",
+                    "content": "Only output a single JSON BLOB with the dates as keys(which should always be in YYYY-MM-DD format) and the values as the objective for that date. keep the objective under 10 words. Do not select more than 4 days. Keep the first date as today if user has provided the today date"
+                    }
+                ]
+
 PROMPT_IMAGE = [
                     {
                         "type": "system",

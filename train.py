@@ -50,18 +50,6 @@ class LoraTrain:
                     break
             if ct>=tg:
                 break
-    
-    def run(self, run_cmd, name_path, output_name):
-        subprocess.run(run_cmd, shell=True)
-        print(f"{self.base_path}/{name_path}_LORA/model/{output_name}.safetensors")
-        print(self.bucket)
-        print(self.s3_key+f'/{output_name}.safetensors')
-        self.s3.upload_file(f"{self.base_path}/{name_path}_LORA/model/{output_name}.safetensors", self.bucket, self.s3_key+f'/{output_name}.safetensors')
-        folder_path = r"{}/{}_LORA".format(self.base_path, name_path)
-        if os.path.exists(folder_path):
-            shutil.rmtree(folder_path)
-        else:
-            print("Folder does not exist.")
 
     def train(self, paths, name_path, prod_name):
 
@@ -78,7 +66,15 @@ class LoraTrain:
 
         run_cmd = f'accelerate launch --num_cpu_threads_per_process=2 ../kohya_ss/sdxl_train_network.py --enable_bucket --min_bucket_reso=256 --max_bucket_reso=2048 --pretrained_model_name_or_path="{self.pretrained_model}" --train_data_dir="{train_data_dir}" --resolution="1024,1024" --output_dir="{output_dir}" --logging_dir="{log_dir}" --network_alpha="1" --save_model_as=safetensors --network_module=networks.lora --text_encoder_lr=5e-05 --unet_lr=0.001 --network_dim=8 --output_name="{output_name}" --lr_scheduler_num_cycles="1" --no_half_vae --learning_rate="0.001" --lr_scheduler="cosine" --lr_warmup_steps="50" --train_batch_size="1" --max_train_steps="500" --save_every_n_epochs="1" --mixed_precision="fp16" --save_precision="fp16" --cache_latents --optimizer_type="AdamW8bit" --max_data_loader_n_workers="0" --bucket_reso_steps=64 --xformers --bucket_no_upscale --noise_offset=0.0'
 #        run_cmd = r"{}".format(run_cmd)
-
         print(run_cmd)
-        self.run(run_cmd, name_path, output_name)
+        subprocess.run(run_cmd, shell=True)
+        print(f"{self.base_path}/{name_path}_LORA/model/{output_name}.safetensors")
+        print(self.bucket)
+        print(self.s3_key+f'/{output_name}.safetensors')
+        self.s3.upload_file(f"{self.base_path}/{name_path}_LORA/model/{output_name}.safetensors", self.bucket, self.s3_key+f'/{output_name}.safetensors')
+        folder_path = r"{}/{}_LORA".format(self.base_path, name_path)
+        if os.path.exists(folder_path):
+            shutil.rmtree(folder_path)
+        else:
+            print("Folder does not exist.")
         #shutil.copy(f"{self.base_path}/{name_path}_LORA/model/{output_name}.safetensors", f"../stable-diffusion-webui/models/Lora/{output_name}.safetensors")
