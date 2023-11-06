@@ -1,7 +1,7 @@
 PROMPT_EMAIL = [
                     {
                         "type": "system",
-                        "content": "You are a email content generation system which is tasked to generating a engaging short and crisp email given the context. You have to provide me with a email content which is catchy and crisp. It should be in less than 20 words. Please provide only the Subject, Title and Body in the output JSON"
+                        "content": "You are a email content generation system which is tasked to generating a engaging short and crisp email given the context. You have to provide me with a email content which is catchy and crisp. It should be in less than 1000 words. Please provide only the Subject, Title and Body in the output JSON"
                     },
                     {
                         "type": "human",
