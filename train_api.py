@@ -1,5 +1,6 @@
 from train import LoraTrain
-llm = get_llm(llm_provider="platform_http", version=3)
+from fastapi import FastAPI, HTTPException
+#llm = get_llm(llm_provider="platform_http", version=3)
 app = FastAPI()
 import time
 
