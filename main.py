@@ -199,7 +199,7 @@ def get_image(context: dict):
 def get_product_specific(context: dict):
     print('context: ', context)
     product = context.get('product', 'sunscreen')
-    payload = {"prompt": f"ohwx product <lora:{product}:1>, {context.get("prompt")}", "negatvive_prompt": IMAGE_NEG_PROMPT, "steps": 30, "height": context.get("height", 1024), "width": context.get("width", 1024),"sampler_index": "DPM++ 2M Karras"}
+    payload = {"prompt": f"ohwx product <lora:{product}:1>, {context.get('prompt')}", "negatvive_prompt": IMAGE_NEG_PROMPT, "steps": 30, "height": context.get("height", 1024), "width": context.get("width", 1024),"sampler_index": "DPM++ 2M Karras"}
     response = requests.post(url=f'http://10.102.51.94:7861/sdapi/v1/txt2img', json=payload, timeout=60)
 
     r = response.json()
