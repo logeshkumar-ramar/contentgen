@@ -15,6 +15,7 @@ import json
 from datetime import date
 
 from pathlib import Path
+from pathlib import PosixPath
 
 from commons.template_utils import (
     replace_content_in_template,
@@ -38,9 +39,25 @@ ALL_PRODUCTS = {
     "sunscreen-spf-50": {"store": "https://stack16test.myshopify.com/products/sunscreen-spf-50", "image": "https://stack16test.myshopify.com/cdn/shop/files/5_2_906x1156_0601206c-48c3-48ce-9603-dbe2b69015d6.jpg"}
 }
 
+def download_from_lambda():
+    
+    s3 = boto3.client('s3')
+    # s3://freddy-freshsales-staging/abhishek/resource/
+    bucket_name = 'freddy-freshsales-staging'
+    file_key = 'abhishek/resource/bee2.json'
+    local_file_path = '/tmp/bee2.json'
+    s3.download_file(bucket_name, file_key, local_file_path)
+    file_key = 'abhishek/resource/campaign.html'
+    local_file_path = '/tmp/campaign.html'
+    s3.download_file(bucket_name, file_key, local_file_path)
+    file_key = 'abhishek/resource/template.html'
+    local_file_path = '/tmp/template.html'
+    s3.download_file(bucket_name, file_key, local_file_path)
+  
+
 
 def generate_content(info):
-    
+    print(info)
     if info.get('channel') == 'email':
         prompt = copy.deepcopy(PROMPT_EMAIL[:])
         prompt[1]['content'] = prompt[1]['content'].format(info=info)
@@ -250,30 +267,38 @@ def get_bannerv2(info):
     return output['items'][0]
 
 def get_content_email(content: dict):
-
-    context = content.get("context", "")
+    print(content)
+    context = content#content.get("context", "")
     
 
     output = generate_content(context)
 
     ##
     
-    replace_content_in_template()
+    #replace_content_in_template()
 
     # product_id
     # product_url
     # product_image_url
-
+    download_from_lambda()
     html_body_path = "template.html"
     json_body_path = "bee2.json"
-
+    print(html_body_path, json_body_path)
     response ={}
-    resources_base = Path(__file__).parent.resolve() / "resources" 
+    resources_base = "/tmp"
+    with open("/tmp/bee2.json", 'r') as fp:
+        data = json.load(fp)
+    resources_base2 = Path(__file__).parent.resolve() / "resources" 
+    
+
+    resources_base = PosixPath("/tmp")
+    print(data)
+    print(type(resources_base2), type(resources_base2), type(output))
     with (resources_base / html_body_path).open() as template, (
             resources_base / json_body_path
         ).open() as editor_config:
 
-            response_output = json.loads(output)
+            response_output = output
             response ={}
 
             response["subject"] = response_output["Subject"]
