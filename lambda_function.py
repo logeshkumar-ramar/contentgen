@@ -34,8 +34,8 @@ def lambda_handler(event, context):
     if path[0]=="get_style":
         content = get_product_specific(context)
     if path[0]=="get_url":
-        context = event['body']
-        content = get_url(context)
+        context = literal_eval(event['body'])
+        content = get_url(context['image'])
         return {
             'statusCode': 200,
             'body': content

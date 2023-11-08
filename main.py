@@ -276,9 +276,9 @@ def get_image(context: dict):
     
 def get_url(context):
     print('get url:')
-    context = literal_eval(context)
-    image = context["image"]
-    output = upload_to_aws2(image)
+    # image = literal_eval(context["image"])
+
+    output = upload_to_aws2(context)
     return output
 
 def get_product_specific(context: dict):
