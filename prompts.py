@@ -132,7 +132,7 @@ PROMPT_PLANNER_V2 = [
                     },
                     {
                     "type": "human",
-                    "content": "Only output a single JSON BLOB with the dates as keys(which should always be in YYYY-MM-DD format) and the values as the objective for that date. keep the objective under 10 words. Do not select more than 4 days. Keep the first date as today if user has provided the today date"
+                    "content": "Only output a single JSON BLOB with the dates as keys(which should always be in YYYY-MM-DD format) and the values as the objective for that date. keep the objective under 10 words. Do not select more than 4 days. Keep the first date as today if user has provided the today date.Also add the description short and crisp"
                     }
                 ]
 
