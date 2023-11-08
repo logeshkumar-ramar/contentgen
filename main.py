@@ -313,7 +313,7 @@ def get_prompt_image(content: dict):
 def get_image(context: dict):
     print('context: ', context)
     
-    payload = {"prompt": context.get("prompt", "beautiful template")+ "intricate, crisp quality, 35mm film, 35mm photography, 8k uhd, hdr, ultra-detailed. Masterpiece, expert, insanely detailed, 4k resolution, best quality, high quality, vivid, detailed background, otherworldly, digital art, ebula, cinematic, dreaming, Film light, bathing in light, very sharp focus, Hyper detailed, Hyper realistic, masterpiece, spiritual, surreal, atmospheric, High resolution, Vibrant, High contrast, Ultra-detail, (highres:1.1), best quality, (masterpiece:1.3), cinematic lighting","negatvive_prompt": IMAGE_NEG_PROMPT, "steps": 50, "height": context.get("height", 1024), "width": context.get("width", 1024),"sampler_index": "DPM++ 2M Karras"}
+    payload = {"prompt": context.get("prompt", "beautiful template")+ "intricate, crisp quality, 35mm film, 35mm photography, 8k uhd, hdr, ultra-detailed. Masterpiece, expert, insanely detailed, 4k resolution, best quality, high quality, vivid, detailed background, otherworldly, digital art, ebula, cinematic, dreaming, Film light, bathing in light, very sharp focus, Hyper detailed, Hyper realistic, masterpiece, spiritual, surreal, atmospheric, High resolution, Vibrant, High contrast, Ultra-detail, (highres:1.1), best quality, (masterpiece:1.3), cinematic lighting","negatvive_prompt": IMAGE_NEG_PROMPT, "steps": 40, "height": context.get("height", 750), "width": context.get("width", 750),"sampler_index": "DPM++ 2M Karras"}
     response = requests.post(url=f'http://10.102.51.94:7861/sdapi/v1/txt2img', json=payload, timeout=5000)
 
     r = response.json()
