@@ -15,6 +15,7 @@ import json
 from datetime import date
 
 from pathlib import Path
+from pathlib import PosixPath
 
 from commons.template_utils import (
     replace_content_in_template,
@@ -38,9 +39,25 @@ ALL_PRODUCTS = {
     "sunscreen-spf-50": {"store": "https://stack16test.myshopify.com/products/sunscreen-spf-50", "image": "https://stack16test.myshopify.com/cdn/shop/files/5_2_906x1156_0601206c-48c3-48ce-9603-dbe2b69015d6.jpg"}
 }
 
+def download_from_lambda():
+    
+    s3 = boto3.client('s3')
+    # s3://freddy-freshsales-staging/abhishek/resource/
+    bucket_name = 'freddy-freshsales-staging'
+    file_key = 'abhishek/resource/bee2.json'
+    local_file_path = '/tmp/bee2.json'
+    s3.download_file(bucket_name, file_key, local_file_path)
+    file_key = 'abhishek/resource/campaign.html'
+    local_file_path = '/tmp/campaign.html'
+    s3.download_file(bucket_name, file_key, local_file_path)
+    file_key = 'abhishek/resource/template.html'
+    local_file_path = '/tmp/template.html'
+    s3.download_file(bucket_name, file_key, local_file_path)
+  
+
 
 def generate_content(info):
-    
+    print(info)
     if info.get('channel') == 'email':
         prompt = copy.deepcopy(PROMPT_EMAIL[:])
         prompt[1]['content'] = prompt[1]['content'].format(info=info)
@@ -250,7 +267,9 @@ def get_bannerv2(info):
     return output['items'][0]
 
 def get_content_email(content: dict):
-
+    print(content)
+    background= content.get("background", "#fff")
+    links= content.get("links",[])
     context = content.get("context", "")
     
 
@@ -258,22 +277,30 @@ def get_content_email(content: dict):
 
     ##
     
-    replace_content_in_template()
-
+    #replace_content_in_template()
+    recommended_product ={}
     # product_id
     # product_url
     # product_image_url
-
+    download_from_lambda()
     html_body_path = "template.html"
     json_body_path = "bee2.json"
-
+    print(html_body_path, json_body_path)
     response ={}
-    resources_base = Path(__file__).parent.resolve() / "resources" 
+    resources_base = "/tmp"
+    with open("/tmp/bee2.json", 'r') as fp:
+        data = json.load(fp)
+    resources_base2 = Path(__file__).parent.resolve() / "resources" 
+    
+
+    resources_base = PosixPath("/tmp")
+    print(data)
+    print(type(resources_base2), type(resources_base2), type(output))
     with (resources_base / html_body_path).open() as template, (
             resources_base / json_body_path
         ).open() as editor_config:
 
-            response_output = json.loads(output)
+            response_output = output
             response ={}
 
             response["subject"] = response_output["Subject"]
@@ -285,11 +312,13 @@ def get_content_email(content: dict):
 
 
             updated_template = replace_content_in_template(
-                template.read(), sanitized_template_content,links=[],recommended_product={}
+                template.read(), sanitized_template_content,links,
+                recommended_product,background
             )
 
             updated_configuration = replace_content_in_editor_configuration(
-            editor_config.read(),sanitized_template_content,links=[],recommended_product={})
+            
+            editor_config.read(),sanitized_template_content,links,recommended_product,background)
 
 
             response["html"]= updated_template
@@ -313,7 +342,7 @@ def get_prompt_image(content: dict):
 def get_image(context: dict):
     print('context: ', context)
     
-    payload = {"prompt": context.get("prompt", "beautiful template")+ "intricate, crisp quality, 35mm film, 35mm photography, 8k uhd, hdr, ultra-detailed. Masterpiece, expert, insanely detailed, 4k resolution, best quality, high quality, vivid, detailed background, otherworldly, digital art, ebula, cinematic, dreaming, Film light, bathing in light, very sharp focus, Hyper detailed, Hyper realistic, masterpiece, spiritual, surreal, atmospheric, High resolution, Vibrant, High contrast, Ultra-detail, (highres:1.1), best quality, (masterpiece:1.3), cinematic lighting","negatvive_prompt": IMAGE_NEG_PROMPT, "steps": 50, "height": context.get("height", 1024), "width": context.get("width", 1024),"sampler_index": "DPM++ 2M Karras"}
+    payload = {"prompt": context.get("prompt", "beautiful template")+ "intricate, crisp quality, 35mm film, 35mm photography, 8k uhd, hdr, ultra-detailed. Masterpiece, expert, insanely detailed, 4k resolution, best quality, high quality, vivid, detailed background, otherworldly, digital art, ebula, cinematic, dreaming, Film light, bathing in light, very sharp focus, Hyper detailed, Hyper realistic, masterpiece, spiritual, surreal, atmospheric, High resolution, Vibrant, High contrast, Ultra-detail, (highres:1.1), best quality, (masterpiece:1.3), cinematic lighting","negatvive_prompt": IMAGE_NEG_PROMPT, "steps": 40, "height": context.get("height", 750), "width": context.get("width", 750),"sampler_index": "DPM++ 2M Karras"}
     response = requests.post(url=f'http://10.102.51.94:7861/sdapi/v1/txt2img', json=payload, timeout=5000)
 
     r = response.json()
