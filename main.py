@@ -271,14 +271,15 @@ def get_content_email(content: dict):
     background= content.get("background", "#fff")
     links= content.get("links",[])
     context = content.get("context", "")
-    
 
     output = generate_content(context)
 
     ##
     
     #replace_content_in_template()
+
     recommended_product ={}
+
     # product_id
     # product_url
     # product_image_url
