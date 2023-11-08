@@ -13,6 +13,15 @@ from ast import literal_eval
 import re
 import json
 from datetime import date
+
+from pathlib import Path
+
+from commons.template_utils import (
+    replace_content_in_template,
+    escape_unsafe_characters,
+    replace_content_in_editor_configuration,
+)
+
 from random import shuffle
 
 ALL_PRODUCTS = {
@@ -28,6 +37,7 @@ ALL_PRODUCTS = {
     "strawberry-lip-scrub": {"store": "https://stack16test.myshopify.com/products/strawberry-lip-scrub", "image": "https://stack16test.myshopify.com/cdn/shop/files/5_1407x1800_e5e9e345-494e-453a-88ef-7977d87ba661.png"},
     "sunscreen-spf-50": {"store": "https://stack16test.myshopify.com/products/sunscreen-spf-50", "image": "https://stack16test.myshopify.com/cdn/shop/files/5_2_906x1156_0601206c-48c3-48ce-9603-dbe2b69015d6.jpg"}
 }
+
 
 def generate_content(info):
     
@@ -242,7 +252,52 @@ def get_bannerv2(info):
 def get_content_email(content: dict):
 
     context = content.get("context", "")
-    return {"email_content": generate_content(context)}
+    
+
+    output = generate_content(context)
+
+    ##
+    
+    replace_content_in_template()
+
+    # product_id
+    # product_url
+    # product_image_url
+
+    html_body_path = "template.html"
+    json_body_path = "bee2.json"
+
+    response ={}
+    resources_base = Path(__file__).parent.resolve() / "resources" 
+    with (resources_base / html_body_path).open() as template, (
+            resources_base / json_body_path
+        ).open() as editor_config:
+
+            response_output = json.loads(output)
+            response ={}
+
+            response["subject"] = response_output["Subject"]
+            response["title"] = response_output["Title"]
+
+
+            sanitized_template_content = escape_unsafe_characters(response_output["Body"])
+
+
+
+            updated_template = replace_content_in_template(
+                template.read(), sanitized_template_content,links=[],recommended_product={}
+            )
+
+            updated_configuration = replace_content_in_editor_configuration(
+            editor_config.read(),sanitized_template_content,links=[],recommended_product={})
+
+
+            response["html"]= updated_template
+            response["json"]= updated_configuration
+            
+
+
+    return {"email_content": response}
 
 def get_content_whatsapp(content: dict):
 
@@ -312,3 +367,5 @@ def get_image2(content: dict):
     
         
     return {"items": generated_images}
+
+    
